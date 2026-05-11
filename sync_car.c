@@ -9,10 +9,10 @@ void station_init(struct station *station){
     pthread_cond_init(&station->cond_passageiro, NULL);
 }
 
-void station_load_car(struct station *station, int assentoVagao){
+void station_load_car(struct station *station, int count){
     pthread_mutex_lock(&station->mutex);
 
-    station->free_seats = assentoVagao;
+    station->free_seats = count;
     station->contador_embarcados = 0;
 
     while (station->free_seats > 0 && station->passageiro_waiting > 0) {
@@ -20,7 +20,7 @@ void station_load_car(struct station *station, int assentoVagao){
         pthread_cond_wait(&station->cond_carro, &station->mutex);
     }
 
-    int sentados = assentoVagao - station->free_seats;
+    int sentados = count - station->free_seats;
     while (station->contador_embarcados < sentados) {
         pthread_cond_wait(&station->cond_carro, &station->mutex);
     }
